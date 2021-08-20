@@ -5,6 +5,7 @@
  import express from "express";
  import cors from "cors";
  import helmet from "helmet";
+ import { defaultRouter } from "./default.router";
  
  dotenv.config();
 
@@ -27,6 +28,7 @@ const app = express();
  app.use(helmet());
  app.use(cors());
  app.use(express.json());
+ app.use("/api/default", defaultRouter);
  
  /**
  * Server Activation
