@@ -1,11 +1,13 @@
 import express, { Request, Response } from "express";
+import * as defaultService from "./default.service"
 
 export const defaultRouter = express.Router();
 
 // GET items
 defaultRouter.get("/", async (req: Request, res: Response) => {
     try {
-      res.status(200).send("get response");
+        const responseData: defaultService.BaseItem = await defaultService.get()
+        return res.status(200).json(responseData);
     } catch (e) {
       res.status(500).send(e.message);
     }
