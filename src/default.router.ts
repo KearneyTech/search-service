@@ -1,15 +1,27 @@
 import express, { Request, Response } from "express";
-import * as defaultService from "./default.service"
+import * as defaultService from "./default.service";
+const pool = require("./database.local");
 
 export const defaultRouter = express.Router();
 
 // GET items
 defaultRouter.get("/", async (req: Request, res: Response) => {
     try {
-        const responseData: defaultService.BaseItem = await defaultService.get()
-        return res.status(200).json(responseData);
-    } catch (e) {
-      res.status(500).send(e.message);
+        //const responseData: defaultService.BaseItem = await defaultService.get()
+        //return res.status(200).json(responseData);
+        try {
+/*           const sample = await pool.query(
+            'INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *',
+            ['Chuck', 'charls@example.com']
+          );
+ */          
+          const result = await pool.query('SELECT * FROM users');
+          res.status(200).json(result.rows);
+        } catch (err:any) {
+          console.error(err);
+        }
+    } catch (e:any) {
+      res.status(500).send(`Get error, ${e.message}`);
     }
 });
 
@@ -17,8 +29,8 @@ defaultRouter.get("/", async (req: Request, res: Response) => {
 defaultRouter.put("/", async (req: Request, res: Response) => {
     try {
       res.status(200).send("put response");
-    } catch (e) {
-      res.status(500).send(e.message);
+    } catch (e:any) {
+      res.status(500).send(`Put error, ${e.message}`);
     }
 });
 
@@ -26,7 +38,7 @@ defaultRouter.put("/", async (req: Request, res: Response) => {
 defaultRouter.post("/", async (req: Request, res: Response) => {
     try {
       res.status(200).send("post response");
-    } catch (e) {
+    } catch (e:any) {
       res.status(500).send(e.message);
     }
 });
@@ -35,7 +47,7 @@ defaultRouter.post("/", async (req: Request, res: Response) => {
 defaultRouter.delete("/", async (req: Request, res: Response) => {
     try {
       res.status(200).send("delete response");
-    } catch (e) {
+    } catch (e:any) {
       res.status(500).send(e.message);
     }
 });
