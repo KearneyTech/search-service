@@ -34,20 +34,7 @@ defaultRouter.get('/:id', async (req: Request, res: Response) => {
 // GET items
 defaultRouter.get('/', async (req: Request, res: Response) => {
     try {
-        //const responseData: defaultService.BaseItem = await defaultService.get()
-        //return res.status(200).json(responseData);
         try {
-            /*           const sample = await pool.query(
-            'INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *',
-            ['Chuck', 'charls@example.com']
-          );
- 
-        const insert = await pool.query(
-          'INSERT INTO items (title, subtitle, description) VALUES ($1, $2, $3) RETURNING *',
-          [req.body.title, req.body.subtitle, req.body.description]
-        );
-*/
-
             const result = await pool.query('SELECT * FROM items');
             res.status(200).json(result.rows);
         } catch (err: any) {
@@ -85,7 +72,6 @@ defaultRouter.post('/', async (req: Request, res: Response) => {
         );
 
         res.json(insert.rows);
-        //res.status(200).send(JSON.stringify({ response: 'post response' }));
     } catch (e: any) {
         res.status(500).send(`Post error, e.message`);
     }
