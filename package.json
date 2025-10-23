@@ -6,7 +6,8 @@
     "type": "module",
     "scripts": {
         "help": "echo start -run dev",
-        "dev": "ts-node-dev --respawn --pretty --transpile-only src/index.ts",
+        "old": "ts-node-dev --respawn --pretty --transpile-only src/index.ts",
+        "dev": "ts-node-dev --respawn --pretty --transpile-only src/server.ts",
         "test": "echo see Postman"
     },
     "dependencies": {
