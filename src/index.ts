@@ -1,14 +1,19 @@
 /**
  * Server initializer
  * 
- * Required External Modules
+ * TODOs:
+ * Rename server.js
  */
+
+// Required External Modules
 import * as dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import { defaultRouter } from './default.router';
+import { smartLogging } from './common/SmartLogging';
 
+const logger = new smartLogging("index", true);
 dotenv.config();
 
 /**
@@ -38,5 +43,6 @@ app.use('/api/default', defaultRouter);
  */
 
 app.listen(PORT, () => {
-    console.log(`Listening on port ${PORT}`);
+    //console.log(`Listening on port ${PORT}`);
+    logger.log("listening", `Listening on port ${PORT}`);
 });
