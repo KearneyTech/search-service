@@ -10,5 +10,6 @@ itemApp.use(helmet());
 itemApp.use(cors());
 itemApp.use(express.json());
 itemApp.use('/api/default', container.itemRoutes);
+itemApp.use('/api/upload', container.uploadRouter);
 
 export { itemApp };
