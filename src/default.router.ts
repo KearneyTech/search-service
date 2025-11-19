@@ -12,7 +12,9 @@
 import express, { Request, Response } from 'express';
 import * as defaultService from './default.service';
 const pool = require('./database.local');
+import { smartLogging } from './common/SmartLogging';
 
+const logger = new smartLogging("default.router", true);
 export const defaultRouter = express.Router();
 
 // GET item by ID
@@ -36,6 +38,7 @@ defaultRouter.get('/', async (req: Request, res: Response) => {
     try {
         try {
             const result = await pool.query('SELECT * FROM items');
+            logger.log("get", JSON.stringify(result.rows));
             res.status(200).json(result.rows);
         } catch (err: any) {
             console.error(err);

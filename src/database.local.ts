@@ -1,6 +1,8 @@
 import * as dotenv from "dotenv";
 import { Pool, PoolClient } from 'pg';
+import { smartLogging } from "./common/SmartLogging";
 
+const logger = new smartLogging("database.local", false);
 dotenv.config();
 
 const portNum = parseInt(process.env.PGPORT as string, 10);
@@ -14,7 +16,7 @@ const pool = new Pool({
 });
 
 pool.connect()
-    .then(() => console.log('Connected to PostgreSQL, pool count:', pool.totalCount))
+    .then(() => logger.log("pool.connect", `Connected to PostgreSQL, pool count: ${pool.totalCount}`))
     .catch((err:any) => console.error('PostgreSQL connection error', err));
 
 module.exports = pool;
