@@ -1,4 +1,3 @@
-// src/container/container.ts
 import { Database } from '../dataSources/Database';
 import { PostgresDatabase } from '../dataSources/PostgresDatabase';
 import { MockDatabase } from '../dataSources/MockDatabase';
@@ -8,6 +7,7 @@ import { createUploadRoutes } from '../routes/uploadRouter';
 
 const dbType = process.env.ITEM_DB_TYPE || 'postgres';
 const postgresConnection = process.env.POSTGRES_ITEM_DB_URL || '';
+const itemMediaPath = process.env.ITEM_MEDIA_PATH || 'uploads';
 
 let db: Database;
 
@@ -16,7 +16,7 @@ db =
         ? new MockDatabase()
         : new PostgresDatabase(postgresConnection);
 
-const itemController = new ItemController(db);
+const itemController = new ItemController(db, itemMediaPath);
 const itemRoutes = createItemRoutes(itemController);
 const uploadRouter = createUploadRoutes();
 

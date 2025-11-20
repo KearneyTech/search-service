@@ -17,9 +17,9 @@ const logger = new smartLogging('ItemController', true);
 export class ItemController {
     UPLOAD_DIR: string;
 
-    constructor(private db: Database) {
+    constructor(private db: Database, uploadDir: string) {
         // Directory for saving uploaded files
-        this.UPLOAD_DIR = path.join(process.cwd(), 'uploads');
+        this.UPLOAD_DIR = path.join(process.cwd(), uploadDir);
 
         // Ensure the upload directory exists
         if (!fs.existsSync(this.UPLOAD_DIR)) {
