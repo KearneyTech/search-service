@@ -37,7 +37,7 @@ export function createItemRoutes(controller: ItemController) {
     defaultRouter.put('/', upload.single('file'), controller.updateItem.bind(controller));
 
     // POST items
-    defaultRouter.post('/', controller.createItem.bind(controller));
+    defaultRouter.post('/', upload.single('file'), controller.createItem.bind(controller));
 
     // DELETE items
     defaultRouter.delete('/', controller.deleteItem.bind(controller));
