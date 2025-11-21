@@ -1,8 +1,10 @@
-// src/controllers/ItemController.ts
 /**
  *
  * TODOs:
- * Return value for create & update
+ * Implement deleteItem
+ * Handle upload of multiple files
+ * Create mock version of upload functionality
+ * Generate meta infor for uploaded files
  */
 import { Request, Response } from 'express';
 import path from 'path';
@@ -49,6 +51,17 @@ export class ItemController {
     async createItem(req: Request, res: Response) {
         const { title, subtitle, description } = req.body;
         logger.log('createItem', JSON.stringify(req.body));
+
+        if(req.file) {
+            try {
+                this.uploadHelper(req.file);
+            } catch (error) {
+                console.error(`Item Controller, createItem - ${error}`);
+            }
+        } else {
+            logger.log('createItem', 'no file');
+        }
+
         const item = await this.db.query(
             'INSERT INTO items (title, subtitle, description) VALUES ($1, $2, $3) RETURNING id',
             [title, subtitle, description]
@@ -69,30 +82,9 @@ export class ItemController {
 
         if (req.file) {
             try {
-                logger.log('updateItem', 'got file');
-                const { originalname, buffer, mimetype } = req.file;
-
-                // Helper: sanitize file names to avoid path traversal
-                const safeName = originalname.replace(/[^a-zA-Z0-9.\-_]/g, '_');
-
-                const outputPath = path.join(this.UPLOAD_DIR, safeName);
-
-                logger.log('POST /media', `outputPath: ${outputPath}`);
-                logger.log('POST /media', `readStream complete`);
-
-                // But since Multer gives a Buffer, we can wrap it as a stream manually
-                const { Readable } = await import('stream');
-                const fileStream = Readable.from(buffer);
-
-                // Stream file buffer to disk
-                const writeStream = fs.createWriteStream(outputPath);
-
-                logger.log('POST /media', `writeStream complete`);
-
-                const pump = promisify(pipeline);
-                await pump(fileStream, writeStream);
+                this.uploadHelper(req.file);
             } catch (error) {
-                console.error('Item Controller, updateItem - Error storing uploaded file.');
+                console.error(`Item Controller, updateItem - ${error}`);
             }
         } else {
             logger.log('updateItem', 'no file');
@@ -100,7 +92,12 @@ export class ItemController {
 
         const result = await this.db.query(
             'UPDATE items SET title = $1, subtitle = $2, description = $3, updated_at = now() WHERE id = $4 RETURNING id',
-            [req.body.title, req.body.subtitle, req.body.description, req.body.id]
+            [
+                req.body.title,
+                req.body.subtitle,
+                req.body.description,
+                req.body.id
+            ]
         );
 
         logger.log('updateItem', JSON.stringify(result[0]));
@@ -110,5 +107,32 @@ export class ItemController {
 
     async deleteItem(req: Request, res: Response) {
         res.status(200).send('Delete Item requested');
+    }
+
+    async uploadHelper(file: Express.Multer.File): Promise<string> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const { originalname, buffer, mimetype } = file;
+                // Helper: sanitize file names to avoid path traversal
+                const safeName = originalname.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+
+                const outputPath = path.join(this.UPLOAD_DIR, safeName);
+
+                // But since Multer gives a Buffer, we can wrap it as a stream manually
+                const { Readable } = await import('stream');
+                const fileStream = Readable.from(buffer);
+
+                // Stream file buffer to disk
+                const writeStream = fs.createWriteStream(outputPath);
+
+                const pump = promisify(pipeline);
+                await pump(fileStream, writeStream);
+                resolve('Done');
+            } catch (error) {
+                reject(
+                    `Item Controller - Error storing uploaded file: ${error}`
+                );
+            }
+        });
     }
 }
